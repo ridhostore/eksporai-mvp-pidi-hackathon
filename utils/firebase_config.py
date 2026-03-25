@@ -26,8 +26,13 @@ class FirebaseDB:
     def _initialize(self):
         """Inisialisasi Firebase Admin SDK"""
         try:
-            # Check jika Firebase sudah diinisialisasi
+            # Check jika Firebase sudah diinisialisasi (Sering terjadi saat Streamlit re-run)
             firebase_admin.get_app()
+            
+            # 👇 TAMBAHAN PERBAIKAN: Pastikan variabel ini tetap di-set meski Firebase sudah jalan
+            self.db = firestore.client()
+            self.is_online = True
+            
         except ValueError:
             # Jika belum, gunakan .env atau credentials.json
             firebase_key = os.getenv('FIREBASE_KEY')
@@ -61,7 +66,7 @@ class FirebaseDB:
     
     def add_umkm(self, umkm_id, umkm_data):
         """Tambah UMKM profile ke Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False): # Tambahan proteksi gettattr
             return self._local_add_umkm(umkm_id, umkm_data)
         
         try:
@@ -76,7 +81,7 @@ class FirebaseDB:
     
     def get_umkm(self, umkm_id):
         """Ambil UMKM profile dari Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False):
             return self._local_get_umkm(umkm_id)
         
         try:
@@ -90,7 +95,7 @@ class FirebaseDB:
     
     def update_score(self, umkm_id, score, status):
         """Update skor kesiapan UMKM di Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False):
             return self._local_update_score(umkm_id, score, status)
         
         try:
@@ -107,7 +112,7 @@ class FirebaseDB:
     
     def add_transaction(self, transaction_data):
         """Catat transaksi UMKM-Buyer di Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False):
             return self._local_add_transaction(transaction_data)
         
         try:
@@ -120,12 +125,10 @@ class FirebaseDB:
         except Exception as e:
             print(f"❌ Error recording transaction: {e}")
             return None
-            print(f"❌ Error recording transaction: {e}")
-            return None
     
     def get_transactions(self, umkm_id, limit=10):
         """Ambil history transaksi UMKM dari Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False):
             return self._local_get_transactions(umkm_id, limit)
         
         try:
@@ -145,7 +148,7 @@ class FirebaseDB:
     
     def add_buyer(self, buyer_id, buyer_data):
         """Tambah buyer profile ke Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False):
             return self._local_add_buyer(buyer_id, buyer_data)
         
         try:
@@ -159,7 +162,7 @@ class FirebaseDB:
     
     def get_all_buyers(self):
         """Ambil semua buyer dari Firestore"""
-        if not self.is_online:
+        if not getattr(self, 'is_online', False):
             return self._local_get_all_buyers()
         
         try:
@@ -168,9 +171,6 @@ class FirebaseDB:
             for doc in docs:
                 buyers[doc.id] = doc.to_dict()
             return buyers
-        except Exception as e:
-            print(f"❌ Error fetching buyers: {e}")
-            return {}
         except Exception as e:
             print(f"❌ Error fetching buyers: {e}")
             return {}
@@ -268,11 +268,9 @@ class FirebaseDB:
         except:
             return {}
 
-
 def get_firebase():
     """Get Firebase Singleton Instance"""
     return FirebaseDB()
-
 
 def console_log(msg):
     """Print dengan timestamp"""

@@ -20,12 +20,13 @@ from utils.firebase_config import get_firebase
 from utils.transaction_tracker import get_transaction_tracker
 from utils.admin_manager import get_admin_manager
 
-# Page config
+# Page config - MOBILE OPTIMIZED
 st.set_page_config(
     page_title="EksporAI - Platform Ekspor UMKM",
     page_icon="🚀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed", # Di-collapse agar di HP langsung fokus ke konten
+    menu_items=None
 )
 
 # Cache data 100k
@@ -38,20 +39,107 @@ def load_real_data():
 
 df_real = load_real_data()
 
-# Custom CSS
+# ============================================
+# CUSTOM CSS - SUPER RESPONSIVE & APP-LIKE
+# ============================================
 st.markdown("""
 <style>
-    .welcome-banner { background: linear-gradient(90deg, #0056D2 0%, #3b82f6 100%); color: white; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .feature-box { background-color: white; padding: 1.5rem; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
-    .ai-recom-item { padding: 10px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
-    .recom-success { background-color: #f0fdf4; border: 1px solid #bbf7d0; }
-    .recom-warning { background-color: #fffbeb; border: 1px solid #fef3c7; }
-    .buyer-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
-    .match-badge { background-color: #d1fae5; color: #059669; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; float: right; }
-    .status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
-    .status-ready { background-color: #d1fae5; color: #065f46; }
-    .status-warning { background-color: #fef3c7; color: #92400e; }
-    .status-not-ready { background-color: #fee2e2; color: #991b1b; }
+    /* Global Background & Font */
+    .stApp { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+    
+    /* Fix Padding for Mobile View */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 5rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        max-width: 1200px;
+    }
+    
+    @media (max-width: 768px) {
+        .block-container {
+            padding-top: 3rem !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
+        }
+    }
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+    }
+    
+    /* Make Radio Buttons look like Menu Items */
+    .stRadio > div { gap: 0.4rem; }
+    .stRadio label {
+        padding: 0.8rem 1rem !important;
+        background-color: #ffffff;
+        border-radius: 12px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+    .stRadio label:hover { background-color: #f1f5f9; }
+    div[role="radiogroup"] > label[data-baseweb="radio"] div[data-testid="stMarkdownContainer"] p {
+        font-weight: 600; font-size: 1rem; color: #1e293b;
+    }
+    .stRadio div[data-baseweb="radio"] div:first-child { display: none; }
+
+    /* Metric Cards - App Style */
+    [data-testid="metric-container"] {
+        background-color: #ffffff; border: 1px solid #e2e8f0;
+        padding: 1rem 1.2rem; border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s;
+    }
+    [data-testid="metric-container"]:hover { transform: translateY(-2px); }
+
+    /* Banner */
+    .welcome-banner { 
+        background: linear-gradient(135deg, #0056D2 0%, #3b82f6 100%); 
+        color: white; padding: 2rem; border-radius: 20px; 
+        margin-bottom: 1.5rem; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    }
+    .welcome-banner h1 { margin: 0; font-size: 2.2rem; font-weight: 700; color: white; }
+    .welcome-banner p { margin: 8px 0 0 0; opacity: 0.9; font-size: 1rem; }
+    @media (max-width: 768px) {
+        .welcome-banner { padding: 1.5rem 1rem; border-radius: 16px; }
+        .welcome-banner h1 { font-size: 1.5rem; }
+    }
+    
+    /* Feature Box & Cards */
+    .feature-box { 
+        background-color: white; padding: 1.5rem; border-radius: 16px; 
+        border: 1px solid #e2e8f0; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    @media (max-width: 768px) { .feature-box { padding: 1rem; border-radius: 12px; } }
+    
+    /* Recommendations & Badges */
+    .ai-recom-item { padding: 1rem; border-radius: 12px; margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 12px; line-height: 1.4; }
+    .recom-success { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .recom-warning { background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    
+    .buyer-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; background-color: #ffffff; }
+    .match-badge { background-color: #d1fae5; color: #059669; padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; float: right; }
+
+    .status-badge { display: block; text-align: center; padding: 0.6rem; border-radius: 12px; font-size: 0.9rem; font-weight: 700; margin: 1rem 0; }
+    .status-ready { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .status-warning { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .status-not-ready { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    
+    /* Forms & Touch Targets */
+    .stTextInput input, .stNumberInput input, .stSelectbox select, .stTextArea textarea { 
+        border-radius: 10px !important; border: 1px solid #cbd5e1 !important; padding: 0.75rem !important; font-size: 16px !important; 
+    }
+    .stButton > button { 
+        width: 100%; font-size: 1rem !important; font-weight: 600 !important; padding: 0.75rem 1rem !important; border-radius: 12px !important; min-height: 48px !important;
+    }
+    
+    @media (max-width: 768px) {
+        [data-testid="stTabs"] { overflow-x: auto; }
+        .stTabs [data-baseweb="tab-list"] button { padding: 0.6rem 1rem !important; border-radius: 20px; border: 1px solid #e2e8f0; white-space: nowrap; }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -69,7 +157,11 @@ with st.sidebar:
     )
     
     st.markdown("---")
-    st.info("MVP EksporAI\nHackathon PIDI 2026\nby Alvindra Agus Syahputra")
+    st.markdown("""
+    <div style='background: #f1f5f9; color: #475569; padding: 1rem; border-radius: 12px; font-size: 0.85rem; border: 1px solid #e2e8f0; text-align: center;'>
+        <b>MVP EksporAI</b><br>Hackathon PIDI 2026<br><small>by Alvindra Agus Syahputra</small>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Initialize Session State
 if 'score' not in st.session_state:
@@ -105,12 +197,15 @@ if menu == "🏠 Dashboard":
         siap_ekspor = len(df_real[df_real['skor_kesiapan'] >= 80])
         total_omzet = df_real['omzet_bulanan'].sum() / 1e12
         
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total UMKM Nasional", f"{total_umkm:,}", "+15%")
-        col2.metric("UMKM Siap Ekspor", f"{siap_ekspor:,}", "Skor > 80")
-        col3.metric("Potensi Transaksi", f"Rp {total_omzet:.1f} T", "+12%")
-        col4.metric("Buyer Global Aktif", "1,250", "+5%")
-        st.markdown("---")
+        # Responsive Columns
+        c1, c2 = st.columns(2)
+        with c1: st.metric("Total UMKM Nasional", f"{total_umkm:,}", "+15%")
+        with c2: st.metric("UMKM Siap Ekspor", f"{siap_ekspor:,}", "Skor > 80")
+            
+        c3, c4 = st.columns(2)
+        with c3: st.metric("Potensi Transaksi", f"Rp {total_omzet:.1f} T", "+12%")
+        with c4: st.metric("Buyer Global Aktif", "1,250", "+5%")
+        st.markdown("<br>", unsafe_allow_html=True)
 
     col_left, col_right = st.columns([1.8, 1.2], gap="large")
 
@@ -125,18 +220,20 @@ if menu == "🏠 Dashboard":
                 value=st.session_state.score,
                 domain={'x': [0, 1], 'y': [0, 1]},
                 gauge={
-                    'axis': {'range': [None, 100]},
-                    'bar': {'color': "#00C896"},
+                    'axis': {'range': [None, 100], 'tickwidth': 1},
+                    'bar': {'color': "#0056D2"},
+                    'bgcolor': "white",
+                    'borderwidth': 0,
                     'steps': [
                         {'range': [0, 50], 'color': "#fee2e2"},
                         {'range': [50, 75], 'color': "#fef3c7"},
                         {'range': [75, 100], 'color': "#d1fae5"}
                     ],
-                    'threshold': {'line': {'color': "#0056D2", 'width': 4}, 'thickness': 0.75, 'value': st.session_state.score}
+                    'threshold': {'line': {'color': "#0f172a", 'width': 4}, 'thickness': 0.75, 'value': st.session_state.score}
                 }
             ))
-            fig.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20))
-            st.plotly_chart(fig, use_container_width=True)
+            fig.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20), font={'family': "Inter"})
+            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
             
             st.progress(st.session_state.score / 100, text=f"Progress Kelengkapan: {st.session_state.score}%")
             
@@ -158,16 +255,16 @@ if menu == "🏠 Dashboard":
         if st.session_state.umkm_data is not None:
             data = st.session_state.umkm_data
             if data.get('punya_sertifikat_halal') == 1:
-                st.markdown("<div class='ai-recom-item recom-success'>✅ <div><b>Sertifikasi Halal sudah lengkap</b><br><small style='color:green;'>+10 Poin Kesiapan</small></div></div>", unsafe_allow_html=True)
+                st.markdown("<div class='ai-recom-item recom-success'><div>✅</div><div><b>Sertifikasi Halal sudah lengkap</b><br><small style='color:green;'>+10 Poin Kesiapan</small></div></div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='ai-recom-item recom-warning'>⚠️ <div><b>Sertifikasi Halal belum ada</b><br><small style='color:orange;'>Segera urus untuk target pasar Timur Tengah</small></div></div>", unsafe_allow_html=True)
+                st.markdown("<div class='ai-recom-item recom-warning'><div>⚠️</div><div><b>Sertifikasi Halal belum ada</b><br><small style='color:orange;'>Segera urus untuk target pasar Timur Tengah</small></div></div>", unsafe_allow_html=True)
                 
             if data.get('punya_sertifikat_bpom') == 1:
-                st.markdown("<div class='ai-recom-item recom-success'>✅ <div><b>Legalitas Mutu Terverifikasi</b><br><small style='color:green;'>Syarat wajib ekspor terpenuhi</small></div></div>", unsafe_allow_html=True)
+                st.markdown("<div class='ai-recom-item recom-success'><div>✅</div><div><b>Legalitas Mutu Terverifikasi</b><br><small style='color:green;'>Syarat wajib ekspor terpenuhi</small></div></div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='ai-recom-item recom-warning'>⚠️ <div><b>Sertifikasi Mutu/BPOM diperlukan</b><br><small style='color:orange;'>Prioritas tinggi sebelum matchmaking</small></div></div>", unsafe_allow_html=True)
+                st.markdown("<div class='ai-recom-item recom-warning'><div>⚠️</div><div><b>Sertifikasi Mutu/BPOM diperlukan</b><br><small style='color:orange;'>Prioritas tinggi sebelum matchmaking</small></div></div>", unsafe_allow_html=True)
         else:
-            st.markdown("<div class='ai-recom-item recom-warning'>⚠️ <div><b>Data Belum Lengkap</b><br><small>Masukkan data usaha di menu Upload Dokumen.</small></div></div>", unsafe_allow_html=True)
+            st.markdown("<div class='ai-recom-item recom-warning'><div>⚠️</div><div><b>Data Belum Lengkap</b><br><small>Masukkan data usaha di menu Upload Dokumen.</small></div></div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_right:
@@ -183,11 +280,11 @@ if menu == "🏠 Dashboard":
                 st.markdown(f"""
                 <div class='buyer-card'>
                     <span class='match-badge'>{b['match']} Match</span>
-                    <h4 style='margin:0 0 5px 0;'>{b['negara']}</h4>
-                    <b>{b['nama']}</b><br><small style='color:gray;'>💡 {b['desc']}</small>
+                    <h4 style='margin:0 0 5px 0; color: #0f172a;'>{b['negara']}</h4>
+                    <b style="color: #334155;">{b['nama']}</b><br><small style='color:gray;'>💡 {b['desc']}</small>
                 </div>
                 """, unsafe_allow_html=True)
-            st.button("Lihat Semua Buyer di Menu Matchmaking", use_container_width=True)
+            st.button("Lihat Semua Buyer di Menu Matchmaking", use_container_width=True, type="secondary")
         else:
             st.warning("⚠️ Skor kesiapan Anda belum memenuhi syarat (Minimal 60) untuk melihat Buyer Internasional.")
         st.markdown("</div>", unsafe_allow_html=True)
@@ -195,11 +292,13 @@ if menu == "🏠 Dashboard":
         # 4. AKTIVITAS TERBARU
         st.markdown("### 🕒 Aktivitas Terbaru")
         st.markdown("<div class='feature-box'>", unsafe_allow_html=True)
-        st.markdown("✅ **Sistem EksporAI Aktif** <br><small style='color:gray;'>Baru saja</small>", unsafe_allow_html=True)
+        st.markdown("✅ **Sistem EksporAI Aktif** <br><span style='color:#94a3b8; font-size:0.85rem;'>Baru saja</span>", unsafe_allow_html=True)
         if st.session_state.score is not None:
-            st.markdown(f"🤖 **Skor diprediksi menggunakan Ensemble AI** <br><small style='color:gray;'>Baru saja</small>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 0.8rem 0; opacity: 0.5;'>", unsafe_allow_html=True)
+            st.markdown(f"🤖 **Skor diprediksi menggunakan Ensemble AI** <br><span style='color:#94a3b8; font-size:0.85rem;'>Baru saja</span>", unsafe_allow_html=True)
         if df_real is not None:
-            st.markdown("📄 **Data 100,000 UMKM Nasional di-load** <br><small style='color:gray;'>Sistem Online</small>", unsafe_allow_html=True)
+            st.markdown("<hr style='margin: 0.8rem 0; opacity: 0.5;'>", unsafe_allow_html=True)
+            st.markdown("📄 **Data 100,000 UMKM Nasional di-load** <br><span style='color:#94a3b8; font-size:0.85rem;'>Sistem Online</span>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ============================================
@@ -208,10 +307,9 @@ if menu == "🏠 Dashboard":
 elif menu == "📄 Upload Dokumen":
     st.markdown("<h2 style='color: #0056D2;'>📄 Analisis Kesiapan UMKM</h2>", unsafe_allow_html=True)
     
-    # --- PERBAIKAN 3: Ekstraksi PDF Terhubung ke Modul ---
+    st.markdown("<div class='feature-box'>", unsafe_allow_html=True)
     st.markdown("### 1. Upload Dokumen Otomatis (AI OCR/NLP)")
     
-    # 📋 FORMAT DOKUMEN YANG DIHARAPKAN
     with st.expander("📋 **Panduan Format Dokumen** (Klik untuk detail)", expanded=False):
         st.markdown("""
         #### 🎯 **FORMAT DOKUMEN YANG DIDUKUNG:**
@@ -269,7 +367,6 @@ elif menu == "📄 Upload Dokumen":
                     if result['status'] in ['success', 'partial']:
                         st.success(f"✅ {result['message']}")
                         
-                        # Show extracted data
                         st.write("#### 📊 Hasil Ekstraksi via AI:")
                         extracted = result['data']
                         
@@ -302,10 +399,9 @@ elif menu == "📄 Upload Dokumen":
                         st.error(f"❌ {result['message']}")
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
+    st.markdown("</div>", unsafe_allow_html=True)
     
-    st.markdown("---")
-    
-    # --- PERBAIKAN 2: Menggunakan ai_engine.py ---
+    st.markdown("<div class='feature-box'>", unsafe_allow_html=True)
     st.markdown("### 2. Verifikasi Data Manual")
     with st.form("umkm_input_form"):
         col1, col2 = st.columns(2)
@@ -325,37 +421,39 @@ elif menu == "📄 Upload Dokumen":
             kapasitas_produksi = st.number_input("Kapasitas Produksi/Bulan", min_value=0, value=500)
             
         # 📋 INFO TENTANG DATA YANG DIBUTUHKAN
-        st.markdown("""
-        #### 📋 **DATA YANG DIBUTUHKAN UNTUK SKOR EKSPOR:**
+        with st.expander("📋 Info Detail Pengaruh Data Pada Skor", expanded=False):
+            st.markdown("""
+            #### 📋 **DATA YANG DIBUTUHKAN UNTUK SKOR EKSPOR:**
+            
+            | Field | Wajib | Pengaruh Skor | Keterangan |
+            |-------|-------|---------------|------------|
+            | **Nama Usaha** | ✅ | - | Identitas perusahaan |
+            | **Sektor** | ✅ | Tinggi | Makanan/Kerajinan/Fashion/Kosmetik |
+            | **Tahun Berdiri** | ✅ | Sedang | Usia perusahaan |
+            | **Modal Usaha** | ✅ | Tinggi | Kapital awal |
+            | **Omzet Bulanan** | ✅ | Sangat Tinggi | Pendapatan rutin |
+            | **Jumlah Karyawan** | ✅ | Sedang | Skala operasi |
+            | **Sertifikat Halal** | ❌ | Tinggi | +10 poin untuk pasar Timur Tengah |
+            | **Sertifikat BPOM** | ❌ | Tinggi | Wajib untuk ekspor |
+            | **NIB** | ❌ | Sedang | Legalitas berusaha |
+            | **Pengalaman Ekspor** | ❌ | Tinggi | Track record ekspor |
+            | **Kapasitas Produksi** | ❌ | Sedang | Volume produksi |
+            
+            #### 🎯 **TINGKAT KESIAPAN EKSPOR:**
+            - **0-40:** ❌ Belum siap (Perlu pengembangan dasar)
+            - **41-60:** ⚠️ Siap parsial (Perlu sertifikasi & modal)
+            - **61-80:** ✅ Siap sedang (Bisa ekspor kecil-kecilan)  
+            - **81-100:** 🚀 Sangat siap (Ready untuk buyer internasional)
+            
+            #### 💡 **TIPS MENINGKATKAN SKOR:**
+            - ✅ Sertifikasi Halal & BPOM (+20 poin)
+            - ✅ Omzet >50jt/bulan (+15 poin)
+            - ✅ Pengalaman ekspor sebelumnya (+10 poin)
+            - ✅ Modal >100jt (+10 poin)
+            - ✅ Kapasitas produksi tinggi (+5 poin)
+            """)
         
-        | Field | Wajib | Pengaruh Skor | Keterangan |
-        |-------|-------|---------------|------------|
-        | **Nama Usaha** | ✅ | - | Identitas perusahaan |
-        | **Sektor** | ✅ | Tinggi | Makanan/Kerajinan/Fashion/Kosmetik |
-        | **Tahun Berdiri** | ✅ | Sedang | Usia perusahaan |
-        | **Modal Usaha** | ✅ | Tinggi | Kapital awal |
-        | **Omzet Bulanan** | ✅ | Sangat Tinggi | Pendapatan rutin |
-        | **Jumlah Karyawan** | ✅ | Sedang | Skala operasi |
-        | **Sertifikat Halal** | ❌ | Tinggi | +10 poin untuk pasar Timur Tengah |
-        | **Sertifikat BPOM** | ❌ | Tinggi | Wajib untuk ekspor |
-        | **NIB** | ❌ | Sedang | Legalitas berusaha |
-        | **Pengalaman Ekspor** | ❌ | Tinggi | Track record ekspor |
-        | **Kapasitas Produksi** | ❌ | Sedang | Volume produksi |
-        
-        #### 🎯 **TINGKAT KESIAPAN EKSPOR:**
-        - **0-40:** ❌ Belum siap (Perlu pengembangan dasar)
-        - **41-60:** ⚠️ Siap parsial (Perlu sertifikasi & modal)
-        - **61-80:** ✅ Siap sedang (Bisa ekspor kecil-kecilan)  
-        - **81-100:** 🚀 Sangat siap (Ready untuk buyer internasional)
-        
-        #### 💡 **TIPS MENINGKATKAN SKOR:**
-        - ✅ Sertifikasi Halal & BPOM (+20 poin)
-        - ✅ Omzet >50jt/bulan (+15 poin)
-        - ✅ Pengalaman ekspor sebelumnya (+10 poin)
-        - ✅ Modal >100jt (+10 poin)
-        - ✅ Kapasitas produksi tinggi (+5 poin)
-        """)
-        
+        st.markdown("<br>", unsafe_allow_html=True)
         submitted = st.form_submit_button("🚀 Hitung Skor Kesiapan (Ensemble AI)", type="primary", use_container_width=True)
 
         if submitted:
@@ -374,8 +472,13 @@ elif menu == "📄 Upload Dokumen":
             }
             
             try:
-                # Hitung skor menggunakan Ensemble AI
-                score = predict_readiness_score(dict_data)
+                # Perbaikan Bug: Pastikan menerima angka, bukan dictionary
+                raw_score = predict_readiness_score(dict_data)
+                
+                if isinstance(raw_score, dict):
+                    score = float(raw_score.get('score', 0))
+                else:
+                    score = float(raw_score)
                 
                 # Simpan ke Firebase/Local Storage
                 db.add_umkm(st.session_state.umkm_id, dict_data)
@@ -391,6 +494,7 @@ elif menu == "📄 Upload Dokumen":
                 
             except Exception as e:
                 st.error(f"❌ Error: {str(e)}")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ============================================
 # HALAMAN 3: MATCHMAKING
@@ -426,7 +530,7 @@ elif menu == "🤝 Matchmaking":
                 with col1:
                     min_match = st.slider("Filter Min. Match Score", 0, 100, 70)
                 with col2:
-                    sort_by = st.radio("Urut berdasarkan:", ["Match Score ⬇️", "Rating ⬇️", "Transaksi Sukses ⬇️"], horizontal=True)
+                    sort_by = st.selectbox("Urut berdasarkan:", ["Match Score ⬇️", "Rating ⬇️", "Transaksi Sukses ⬇️"])
                 
                 # Filter recommendations
                 filtered_recs = [r for r in recommendations if r.get('match_score', 0) >= min_match]
@@ -441,35 +545,35 @@ elif menu == "🤝 Matchmaking":
                 
                 st.markdown("---")
                 
-                # Display buyers
+                # Display buyers with nice card
                 for idx, buyer in enumerate(filtered_recs, 1):
                     with st.container():
-                        col_left, col_mid, col_right = st.columns([2, 1, 1])
-                        
-                        with col_left:
-                            st.markdown(f"### {idx}. {buyer['nama']}")
-                            st.markdown(f"📍 **{buyer['negara']}** | 🏢 {buyer['jenis_perusahaan']}")
-                            st.markdown(f"**Deskripsi:** {buyer['deskripsi']}")
-                            st.markdown(f"**Preferensi:** {', '.join(buyer.get('preferensi_sektor', []))}")
-                            st.markdown(f"**Min. Order:** {buyer['min_order']:,} pcs | **Min. Score:** {buyer['min_score']}/100")
-                            st.markdown(f"**Rating:** {'⭐' * int(buyer.get('rating', 4))} ({buyer.get('rating', 0)}/5)")
-                            st.markdown(f"**Transaksi Berhasil:** {buyer.get('transaksi_sukses', 0)} kali")
-                        
-                        with col_mid:
-                            st.metric("Match Score", f"{buyer['match_score']}%", delta=f"+{buyer['match_score']-score}pts")
-                        
-                        with col_right:
-                            if st.button(f"📧 Hubungi Sekarang", key=f"contact_{buyer['id']}", use_container_width=True):
-                                # Record buyer contact interaction
-                                tracker.record_buyer_contact(
-                                    st.session_state.umkm_id,
-                                    buyer['id'],
-                                    'inquiry',
-                                    f"Interest from {umkm_data.get('nama', 'UMKM')}"
-                                )
-                                st.success(f"✅ Permintaan kontak ke **{buyer['nama']}** telah dikirim!\n\n📧 Kami akan menghubungi Buyer untuk memfasilitasi koneksi.")
-                        
-                        st.markdown("---")
+                        st.markdown(f"""
+                        <div class="feature-box" style="margin-bottom: 1rem; padding: 1.2rem;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px;">
+                                <h3 style="margin: 0; color: #0f172a;">{idx}. {buyer['nama']}</h3>
+                                <div class="match-badge" style="font-size: 0.9rem;">{buyer['match_score']}% Match</div>
+                            </div>
+                            <p style="margin: 0 0 10px 0; color: #475569;">📍 <b>{buyer['negara']}</b> | 🏢 {buyer['jenis_perusahaan']}</p>
+                            <p style="font-size: 0.95rem; margin-bottom: 15px;"><b>Deskripsi:</b> {buyer['deskripsi']}<br><b>Preferensi:</b> {', '.join(buyer.get('preferensi_sektor', []))}</p>
+                            <div style="background: #f8fafc; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px;">
+                                <b>Min. Order:</b> {buyer['min_order']:,} pcs &nbsp;|&nbsp; 
+                                <b>Min. Score:</b> {buyer['min_score']}/100 &nbsp;|&nbsp; 
+                                <b>Rating:</b> {'⭐' * int(buyer.get('rating', 4))} ({buyer.get('rating', 0)}/5) &nbsp;|&nbsp;
+                                <b>Transaksi Berhasil:</b> {buyer.get('transaksi_sukses', 0)} kali
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                        if st.button(f"📧 Hubungi Sekarang", key=f"contact_{buyer['id']}", use_container_width=True):
+                            # Record buyer contact interaction
+                            tracker.record_buyer_contact(
+                                st.session_state.umkm_id,
+                                buyer['id'],
+                                'inquiry',
+                                f"Interest from {umkm_data.get('nama', 'UMKM')}"
+                            )
+                            st.success(f"✅ Permintaan kontak ke **{buyer['nama']}** telah dikirim!\n\n📧 Kami akan menghubungi Buyer untuk memfasilitasi koneksi.")
                 
                 # Export & Actions
                 st.markdown("### 📥 Export & Actions")
@@ -500,7 +604,7 @@ elif menu == "🤝 Matchmaking":
                 with col_exp3:
                     if st.button("💬 Feedback", use_container_width=True):
                         feedback_text = st.text_area("Bagikan feedback tentang rekomendasi ini:", height=100)
-                        if st.button("Kirim Feedback"):
+                        if st.button("Kirim Feedback", key="btn_send_feedback"):
                             st.success("✅ Terima kasih atas feedback Anda!")
                 
             except Exception as e:
@@ -529,14 +633,16 @@ elif menu == "📊 Admin Panel":
         st.session_state.admin_authenticated = False
     
     if not st.session_state.admin_authenticated:
+        st.markdown("<div class='feature-box'>", unsafe_allow_html=True)
         admin_pass = st.text_input("🔐 Password Admin:", type="password")
-        if st.button("Login"):
+        if st.button("Login", type="primary"):
             if admin_pass == correct_password:
                 st.session_state.admin_authenticated = True
                 st.success("✅ Akses Admin Diberikan!")
                 st.rerun()
             else:
                 st.error("❌ Password salah!")
+        st.markdown("</div>", unsafe_allow_html=True)
     else:
         # Admin authenticated - show dashboard
         if st.button("🔓 Logout Admin"):

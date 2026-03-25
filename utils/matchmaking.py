@@ -267,15 +267,6 @@ matcher = IntelligentMatcher()
 def get_buyer_recommendations(score, sektor="Makanan", umkm_data=None, top_n=5):
     """
     Legacy function wrapper untuk backward compatibility
-    
-    Parameters:
-    score (int): UMKM readiness score (0-100)
-    sektor (str): Business sector
-    umkm_data (dict): Full UMKM data untuk intelligent matching
-    top_n (int): Number of recommendations to return
-    
-    Returns:
-    list: List of buyer dictionaries dengan match scores
     """
     if umkm_data is None:
         umkm_data = {
@@ -287,5 +278,9 @@ def get_buyer_recommendations(score, sektor="Makanan", umkm_data=None, top_n=5):
             'punya_nib': 1,
             'kapasitas_produksi': 500
         }
+    else:
+        # 👇 TAMBAHKAN 2 BARIS INI (Inject data yang hilang)
+        umkm_data['skor_kesiapan'] = score
+        umkm_data['sektor'] = sektor
     
     return matcher.get_recommendations(umkm_data, top_n)
