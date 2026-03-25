@@ -346,11 +346,11 @@ dashboard = admin.get_dashboard_analytics()
 ## 🎓 Model Training Architecture
 
 **Models:**
-1. **Random Forest** - 100 trees
+1. **Random Forest** - 100-300 trees
    - Good for capturing non-linear relationships
    - Robust to outliers
    
-2. **Gradient Boosting** - 100 trees
+2. **Gradient Boosting** - 100-300 trees
    - Sequential learning
    - Captures complex patterns
 
@@ -450,7 +450,7 @@ curl -X POST "http://localhost:8000/api/v1/transactions" \
 ## 📄 License & Credits
 
 - Built with: Streamlit, FastAPI, Scikit-Learn, Firebase
-- Data: 1M synthetic UMKM dataset
+- Data: 100K synthetic UMKM dataset
 - Model: Ensemble (RF + GB)
 
 ---
@@ -461,7 +461,7 @@ curl -X POST "http://localhost:8000/api/v1/transactions" \
 
 ```
           ╔═════════════════════════════╗
-          ║    EksporAI MVP Ready! 🚀   ║
-          ║   Ready to Export Together   ║
+          ║   EksporAI MVP Ready! 🚀   ║
+          ║  Ready to Export Together   ║
           ╚═════════════════════════════╝
 ```
