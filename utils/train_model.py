@@ -50,5 +50,12 @@ print(f"Tingkat Error (RMSE): {rmse:.2f}")
 
 # 5. Simpan Model
 os.makedirs('models', exist_ok=True)
-joblib.dump(ensemble_model, 'models/model_scoring.pkl')
+
+# Simpan data model beserta range target asli supaya bisa disesuaikan ke skala 0-100
+model_artifact = {
+    'estimator': ensemble_model,
+    'y_min': float(y.min()),
+    'y_max': float(y.max())
+}
+joblib.dump(model_artifact, 'models/model_scoring.pkl')
 print("\n✅ Ensemble Model sukses dibekukan dan disimpan di models/model_scoring.pkl")

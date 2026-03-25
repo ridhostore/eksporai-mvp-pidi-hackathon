@@ -16,9 +16,18 @@ def predict_readiness_score(umkm_data):
             print("Model ML tidak ditemukan, menggunakan rule-based fallback.")
             return _rule_based_scoring(umkm_data)
         
-        # 1. LOAD MODEL (Model yang diload otomatis berisi gabungan RF & GB)
-        model = joblib.load(model_path)
-        
+        # 1. LOAD MODEL (Model yang diload otomatis berisi gabungan RF & GB + metadata)
+        model_payload = joblib.load(model_path)
+
+        if isinstance(model_payload, dict) and 'estimator' in model_payload:
+            model = model_payload['estimator']
+            y_min = model_payload.get('y_min', 0)
+            y_max = model_payload.get('y_max', 100)
+        else:
+            # Kompatibilitas mundur jika model lama hanya VotingRegressor
+            model = model_payload
+            y_min, y_max = 0, 100
+
         # 2. INPUT FORMATTING (Harus urut sesuai saat training)
         features = [
             'tahun_berdiri', 'modal_usaha', 'omzet_bulanan', 'jumlah_karyawan',
@@ -26,12 +35,18 @@ def predict_readiness_score(umkm_data):
             'ekspor_sebelumnya', 'kapasitas_produksi'
         ]
         input_df = pd.DataFrame([umkm_data])[features]
-        
+
         # 3. PREDICT (Otomatis mengambil rata-rata dari RF dan GB)
-        score = model.predict(input_df)[0]
-        
+        raw_score = model.predict(input_df)[0]
+
+        # 4. Calibrate ke skala 0-100 berdasarkan data training
+        if y_max > y_min:
+            score = (raw_score - y_min) / (y_max - y_min) * 100
+        else:
+            score = raw_score
+
         # Pastikan skor tidak bocor di luar 0 - 100
-        score = float(np.clip(score, 0, 100)) 
+        score = float(np.clip(score, 0, 100))
         
         return int(score)
     
