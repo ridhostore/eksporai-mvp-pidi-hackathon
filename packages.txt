@@ -2,9 +2,7 @@ tesseract-ocr
 tesseract-ocr-ind
 tesseract-ocr-eng
 poppler-utils
-libglib2.0-0
 libsm6
 libxext6
-libxrender-dev
+libxrender1
 libgomp1
-libgthread-2.0-0
