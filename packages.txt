@@ -1,11 +1,7 @@
-# packages.txt - System dependencies untuk Streamlit Cloud
-# OCR dan PDF processing
 tesseract-ocr
 tesseract-ocr-ind
 tesseract-ocr-eng
 poppler-utils
-
-# Image processing
 libglib2.0-0
 libsm6
 libxext6
